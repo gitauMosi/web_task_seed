@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+
+<body style="display: flex">
+    <div class="fom">
+
+        <div class="column">
+            <form>
+                <div class="title">Welcome Back</div>
+                <div class="form-control">
+                    <input type="email" id="email" name "email" placeholder="Enter email">
+                </div>
+                <br>
+                <div class="form-control">
+                    <input type="password" id="password" name "password" placeholder="Password">
+                </div>
+                <br>
+                <!--
+                <div class="row">
+                    <input type="checkbox" name="remember" id="remember">
+                    <p>Remember me</p>
+                </div> -->
+                <button onclick="login()" class="btn">submit</button>
+            </form>
+            <p>
+                Don't have account <a href="/signup">Signup</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:5000/api";
+
+        async function login() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const res = await fetch(`${API_URL}/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                localStorage.setItem("token", data.token);
+                alert("Logged in successfully!");
+                window.location.href = "/index"; 
+            } else {
+                alert("Login failed!");
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>

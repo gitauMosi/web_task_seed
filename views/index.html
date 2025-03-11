@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskSeed: home</title>
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+
+<body>
+
+    <!-- Navigation bar -->
+    <nav>
+        <div class="logo">TaskSeed</div>
+        <div>
+            <a class="nav-item" id="portfolio">Pricing</a>
+            <a class="nav-item" id="portfolio">Profile</a>
+            <a class="nav-item" id="contact" onclick="logout()">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+        <h3>
+            Today Tasks
+        </h3>
+        <br>
+        <!-- display task -->
+        <div class="task-list">
+            <!-- task list -->
+
+        </div>
+
+        <!-- floating button -->
+        <div class="floating-btn" id="openPopupBtn">
+            <center> + </center>
+        </div>
+
+    </main>
+
+    <!-- Popup -->
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <h3>Enter Information</h3>
+            <input type="text" id="todoTitle" placeholder="Enter Title" required>
+            <input type="text" id="todoContent" placeholder="Enter description" required>
+            <button id="submitBtn">Submit</button>
+            <button class="close-btn" id="closePopupBtn">Close</button>
+        </div>
+    </div>
+
+    <script src="/js/index.js"></script>
+
+</body>
+
+</html>

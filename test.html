@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+</head>
+<body>
+    <h2>User Authentication</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <button onclick="login()">Login</button>
+    <button onclick="logout()">Logout</button>
+    
+    <h2>Create a To-Do</h2>
+    <input type="text" id="todoTitle" placeholder="Title">
+    <textarea id="todoContent" placeholder="Content"></textarea>
+    <button onclick="createTodo()">Add To-Do</button>
+    
+    <h2>Your To-Dos</h2>
+    <ul id="todoList"></ul>
+
+    <script>
+        const API_URL = "http://localhost:5000/api";
+
+        // Register User
+        async function register() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const res = await fetch(`${API_URL}/auth/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+            alert(res.ok ? "Registered successfully!" : "Registration failed.");
+        }
+
+        // Login User
+        async function login() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const res = await fetch(`${API_URL}/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.setItem("token", data.token);
+                alert("Logged in successfully!");
+                fetchTodos();
+            } else {
+                alert("Login failed!");
+            }
+        }
+
+        // Logout User (Remove token from localStorage)
+        function logout() {
+            localStorage.removeItem("token");
+            alert("Logged out!");
+            document.getElementById("todoList").innerHTML = "";
+        }
+
+        // Fetch To-Dos
+        async function fetchTodos() {
+            const token = localStorage.getItem("token");
+            if (!token) return alert("Please log in first.");
+            const res = await fetch(`${API_URL}/todos`, {
+                headers: { "Authorization": `Bearer ${token}` },
+            });
+            const todos = await res.json();
+            const todoList = document.getElementById("todoList");
+            todoList.innerHTML = "";
+            todos.forEach(todo => {
+                const li = document.createElement("li");
+                li.innerHTML = `${todo.title} - ${todo.content} 
+                    <button onclick="updateTodo(${todo.id})">Edit</button>
+                    <button onclick="deleteTodo(${todo.id})">Delete</button>`;
+                todoList.appendChild(li);
+            });
+        }
+
+        // Create To-Do
+        async function createTodo() {
+            const token = localStorage.getItem("token");
+            if (!token) return alert("Please log in first.");
+            const title = document.getElementById("todoTitle").value;
+            const content = document.getElementById("todoContent").value;
+            const res = await fetch(`${API_URL}/todos`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ title, content }),
+            });
+            if (res.ok) {
+                alert("To-Do added!");
+                fetchTodos();
+            } else {
+                alert("Failed to add To-Do.");
+            }
+        }
+
+        // Update To-Do
+        async function updateTodo(id) {
+            const token = localStorage.getItem("token");
+            if (!token) return alert("Please log in first.");
+            const newTitle = prompt("Enter new title:");
+            const newContent = prompt("Enter new content:");
+            if (!newTitle || !newContent) return;
+            const res = await fetch(`${API_URL}/todos/${id}`, {
+                method: "PUT",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ title: newTitle, content: newContent }),
+            });
+            if (res.ok) {
+                alert("To-Do updated!");
+                fetchTodos();
+            } else {
+                alert("Failed to update To-Do.");
+            }
+        }
+
+        // Delete To-Do
+        async function deleteTodo(id) {
+            const token = localStorage.getItem("token");
+            if (!token) return alert("Please log in first.");
+            const res = await fetch(`${API_URL}/todos/${id}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` },
+            });
+            if (res.ok) {
+                alert("To-Do deleted!");
+                fetchTodos();
+            } else {
+                alert("Failed to delete To-Do.");
+            }
+        }
+
+        // Auto-fetch todos if logged in
+        if (localStorage.getItem("token")) fetchTodos();
+    </script>
+</body>
+</html>
