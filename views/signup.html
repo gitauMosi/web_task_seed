@@ -27,7 +27,7 @@
                     <input type="checkbox" name="remember" id="remember">
                     <p>Remember me</p>
                 </div> -->
-                <button class="btn" onclick="register()">submit</button>
+                <button class="btn" onclick="register(event)">submit</button>
             </form>
             <p>
                 Already have an account <a href="/login">Login</a>
@@ -38,7 +38,9 @@
     <script>
         const API_URL = "http://localhost:5000/api";
 
-        async function register() {
+        async function register(event) {
+
+            event.preventDefault();
 
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;

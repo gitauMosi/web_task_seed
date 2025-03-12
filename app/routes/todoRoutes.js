@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { title, content } = req.body;
-    const todo = await Todo.create({ title, content, userId: req.user.userId });
+    const todo = await Todo.create({ title, content, isDone: false,  userId: req.user.userId });
     res.json(todo);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -28,8 +28,8 @@ router.get("/", authMiddleware, async (req, res) => {
 // Update To-Do
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    const { title, content } = req.body;
-    await Todo.update({ title, content }, { where: { id: req.params.id, userId: req.user.userId } });
+    const { title, content, isDone } = req.body;
+    await Todo.update({ title, content, isDone }, { where: { id: req.params.id, userId: req.user.userId } });
     res.json({ message: "To-Do updated successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });

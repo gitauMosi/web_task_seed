@@ -10,55 +10,57 @@
 
 <body style="display: flex">
     <div class="fom">
-
         <div class="column">
-            <form>
+            <form onsubmit="login(event)">
                 <div class="title">Welcome Back</div>
                 <div class="form-control">
-                    <input type="email" id="email" name "email" placeholder="Enter email">
+                    <input type="email" id="email" name="email" placeholder="Enter email">
                 </div>
                 <br>
                 <div class="form-control">
-                    <input type="password" id="password" name "password" placeholder="Password">
+                    <input type="password" id="password" name="password" placeholder="Password">
                 </div>
                 <br>
-                <!--
-                <div class="row">
-                    <input type="checkbox" name="remember" id="remember">
-                    <p>Remember me</p>
-                </div> -->
-                <button onclick="login()" class="btn">submit</button>
+                <button type="submit" class="btn">Submit</button>
+                <div id="error-div"></div>
             </form>
             <p>
-                Don't have account <a href="/signup">Signup</a>
+                Don't have an account? <a href="/signup">Signup</a>
             </p>
         </div>
     </div>
 
     <script>
         const API_URL = "http://localhost:5000/api";
+        const errorDiv = document.getElementById("error-div");
 
-        async function login() {
+        async function login(event) {
+            event.preventDefault();
+
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
 
-            const res = await fetch(`${API_URL}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
+            try {
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
 
-            const data = await res.json();
+                const data = await res.json();
 
-            if (res.ok) {
-                localStorage.setItem("token", data.token);
-                alert("Logged in successfully!");
-                window.location.href = "/index"; 
-            } else {
-                alert("Login failed!");
+                if (res.ok) {
+                    localStorage.setItem("token", data.token);
+                    alert("Logged in successfully!");
+                    errorDiv.innerHTML = "";
+                    window.location.href = "/index";
+                } else {
+                    errorDiv.innerHTML = "Login failed!";
+                }
+            } catch (error) {
+                errorDiv.innerHTML = "Login failed!";
             }
         }
-
     </script>
 
 </body>

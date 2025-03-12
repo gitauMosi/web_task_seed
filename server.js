@@ -42,6 +42,23 @@ app.get("/index", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/todos", todoRoutes);
 
+
+// handle errors
+// 404 Error Handling Middleware
+app.use((req, res, next) => {
+    res.sendFile(path.join(__dirname, "views", "404.html"));
+});
+
+//error handler
+app.use((err, req, res, next) => {
+    // Check if headers have already been sent
+    if (!res.headersSent) {
+       res.status(500).send("Internal Server Error");
+    } else {
+       next(err); 
+    }
+ });
+
 const PORT = process.env.PORT || 5000;
 
 sequelize.sync().then(() => {

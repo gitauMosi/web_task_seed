@@ -1,6 +1,16 @@
 // imports
 const API_URL = "http://localhost:5000/api";
 
+// ========== Auth ===========
+
+// Logout User 
+function logout() {
+  localStorage.removeItem("token");
+  alert("Logged out!");
+  document.getElementById("todoList").innerHTML = "";
+  window.location.href = "/login";
+}
+
 // ============== popup dialog ================
 
 const openPopupBtn = document.getElementById('openPopupBtn');
@@ -24,7 +34,7 @@ submitBtn.addEventListener('click', () => {
   const content = todoContent.value.trim();
 
   if (title && content) {
-    createTodo(title, content);  // Pass title and content to createTodo
+    createTodo(title, content);  
     popup.style.display = 'none';
   } else {
     alert('Please fill in both fields!');
@@ -79,10 +89,10 @@ async function loadTodos() {
         </div>
 
         <div class="trailing row">
-        <div class="edit-btn" id="openPopupBtn">🖍</div>
+        <div class="edit-btn" onclick="updateTodo(${todo.id})">🖍</div>
             <div class="delete-btn" onclick="deleteTodo(${todo.id})">❌</div>
             <label class="custom-checkbox">
-                <input type="checkbox" id="checkbox">
+                <input type="checkbox" id="checkbox" value="isDone" onclick="updateIsDone(${todo.id})" ${todo.isDone ? "checked" : ""}>
                 <span class="checkmark"></span>
             </label>
         </div>
@@ -91,6 +101,7 @@ async function loadTodos() {
     });
   } else {
     alert("Failed to load todos!");
+    window.location.href = "/login";
   }
 }
 
@@ -113,11 +124,35 @@ async function createTodo(title, content) {
 
   if (res.ok) {
     alert("To-Do added!");
-    loadTodos();  // Re-fetch all todos
+    loadTodos();  
   } else {
     alert("Failed to add To-Do.");
   }
 }
+
+// +++++++++ Update Task Status ++++++++
+
+ async function updateIsDone(id) {
+  const token = localStorage.getItem("token");
+  if (!token) return alert("Please log in first.");
+
+  const res = await fetch(`${API_URL}/todos/${id}`, {
+    method: "PUT",
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ isDone: true }),
+  });
+
+  if (res.ok) {
+    alert("To-Do updated!");
+    loadTodos(); 
+  } else {
+    alert("Failed to update To-Do.");
+  }
+  
+ }
 
 // +++++++++ Update Task ++++++++
 async function updateTodo(id) {
@@ -140,7 +175,7 @@ async function updateTodo(id) {
 
   if (res.ok) {
     alert("To-Do updated!");
-    loadTodos();  // Re-fetch all todos
+    loadTodos(); 
   } else {
     alert("Failed to update To-Do.");
   }
@@ -158,7 +193,7 @@ async function deleteTodo(id) {
   });
 
   if (res.ok) {
-    loadTodos();  // Re-fetch all todos
+    loadTodos();  
   } else {
     alert("Failed to delete To-Do.");
   }

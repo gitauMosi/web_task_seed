@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      isDone: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
     });
     return Todo;
   };
